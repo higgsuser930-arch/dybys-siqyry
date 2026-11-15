@@ -6,6 +6,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pic = w => EMO[w] || '🖼️';
+const OVR = window.ALBUM_OVERRIDES || {};
 function h(tag, attrs, ...kids) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs || {})) {
@@ -15,6 +16,23 @@ function h(tag, attrs, ...kids) {
   kids.flat().forEach(c => c != null && c !== false && e.append(c.nodeType ? c : document.createTextNode(c)));
   return e;
 }
+
+/* ---------- дерек: логопед түзетулерін қолдану ---------- */
+(() => {
+  const kids = ['🧒', '👧'];
+  D.forEach(s => {
+    const o = OVR[s.letter] || {}, g6 = s.g6;
+    s.g5 = o.g5 || s.g5;
+    s.g6 = o.g6 || { easy: g6.medium.slice(0, 2), medium: g6.medium, hard: g6.hard };
+    s.g4sent = o.g4sent || s.g4.hard.slice(0, 3);
+    const w = s.g7;
+    s.g7x = o.g7 || {
+      easy: { scene: [pic(w.easy[0])], big: true, words: [w.easy[0]], q: ['Бұл не?', 'Оның түсі қандай?', `${w.easy[0][0].toUpperCase() + w.easy[0].slice(1)} қандай болады?`] },
+      medium: { scene: [...w.medium.slice(0, 3).map(pic), ...kids], words: w.medium, q: ['Суретте кімдер бар?', 'Олар не істеп жатыр?', 'Суретте нелер бар?'] },
+      hard: { scene: ['☀️', '🌳', ...w.hard.slice(0, 4).map(pic), ...kids], words: w.hard, q: ['Суретте қандай оқиға бейнеленген?', 'Балалар не істеп жүр?', 'Айналада нелер бар?', 'Оқиға қалай аяқталуы мүмкін?'] }
+    };
+  });
+})();
 
 /* ---------- сақтау ---------- */
 const KEY = 'dybys-siqyry.v1';
@@ -148,6 +166,7 @@ function judge(spec, r) {
     let ok = false, n = 0;
     if (spec.mode === 'word') ok = hasWord(alt, spec.target);
     else if (spec.mode === 'sentence') ok = spec.target.split(/\s+/).every(w => hasWord(alt, w.replace(/[.!?]/g, '')));
+    else if (spec.mode === 'story') { const T = toks(alt), sup = [...new Set(spec.words || [])].filter(w => hasWord(alt, w)).length, lw = new Set(T.filter(x => x.includes(spec.letter.toLowerCase()))).size; ok = T.length >= spec.minTokens && Math.max(sup, lw) >= spec.min; }
     else { n = [...new Set(spec.words)].filter(w => hasWord(alt, w)).length; ok = n >= (spec.min || 1) && toks(alt).length >= (spec.minTokens || 1); }
     if (ok) return { ok: true, heard: alt };
     best = best || alt;
@@ -316,17 +335,17 @@ function buildSteps(s, g, lv) {
   if (g === 2) { const n = lv === 'easy' ? 1 : 3; for (let i = 0; i < n; i++) steps.push({ kind: 'speak', mode: 'voice', n, i, say: 'snd:' + l, show: L, hintText: lv === 'hard' ? ['Жай айт', 'Қалыпты айт', 'Сәл қатты айт'][i] : lv === 'medium' ? `${i + 1}-ші рет` : 'Тыңда да, қайтала!', cam: true }); }
   if (g === 3) for (const w of s.g3[lv]) { steps.push({ kind: 'train', word: w, syl: s.syl[w], pick: lv === 'medium', both: lv === 'hard' }); }
   if (g === 4) { for (const w of s.g4[lv]) steps.push({ kind: 'speak', mode: 'word', target: w, show: pic(w), word: w, hintText: 'Суретке қарап, атауын айт!', reveal: true });
-    if (lv === 'hard') steps.push({ kind: 'speak', mode: 'words', words: s.g4.hard, min: 2, minTokens: 3, show: s.g4.hard.slice(0, 4).map(pic).join(' '), hintText: 'Екі сөзді қатыстырып, сөйлем айт!', sentenceHint: true }); }
+    if (lv === 'hard') steps.push({ kind: 'speak', mode: 'words', words: s.g4sent, min: 2, minTokens: 3, cards: s.g4sent, hintText: 'Тірек сөздердің кемінде екеуін қатыстырып, мағыналы сөйлем айт!' }); }
   if (g === 5) { const ws = shuffle([...s.g5[lv].map(w => ({ w, none: false })), { w: shuffle(s.g1.wrong)[0], none: true }]); for (const x of ws) steps.push({ kind: 'pos', word: x.w, none: x.none, ok: pos(x.w, L) }); }
   if (g === 6) {
-    if (lv === 'easy') steps.push({ kind: 'speak', mode: 'sentence', target: s.g6.sentence, say: s.g6.sentence, show: '💬', text: s.g6.sentence, hintText: 'Сөйлемді тыңда да, қайтала!' });
-    else { const ws = s.g6[lv]; steps.push({ kind: 'speak', mode: 'words', words: ws, min: 2, minTokens: lv === 'hard' ? 3 : 2, show: ws.map(pic).join(' '), words_: ws, hintText: lv === 'medium' ? 'Осы сөздермен сөйлем құра!' : `Кемінде екі сөзді қатыстырып, толық сөйлем айт!`, support: ws }); }
+    const ws = s.g6[lv];
+    const hint = { easy: 'Берілген екі сөзді қатыстырып, қарапайым сөйлем құра.', medium: 'Берілген тірек сөздерді пайдаланып, сөйлем құра.', hard: 'Берілген тірек сөздерді пайдаланып, кемінде екі сөзді қатыстырып, толық әрі мағыналы сөйлем құра.' }[lv];
+    steps.push({ kind: 'speak', mode: 'words', words: ws, min: 2, minTokens: lv === 'easy' ? 2 : lv === 'medium' ? 3 : 4, cards: ws, hintText: hint });
   }
   if (g === 7) {
-    const ws = s.g7[lv];
-    if (lv === 'easy') steps.push({ kind: 'speak', mode: 'words', words: ws, min: 1, minTokens: 3, show: ws.map(pic).join(' '), hintText: 'Суретке қарап, 1–2 сөйлем айт!', support: ws, long: true });
-    if (lv === 'medium') ws.slice(0, 3).forEach((w, i) => steps.push({ kind: 'speak', mode: 'words', words: ws, min: 1, minTokens: 2, show: pic(w), hintText: `${i + 1}-сурет: бір сөйлем айт!`, support: ws, tag: `${i + 1}/3`, long: true }));
-    if (lv === 'hard') steps.push({ kind: 'speak', mode: 'words', words: ws, min: 3, minTokens: 7, show: ws.map(pic).join(' '), hintText: '4–5 сөйлемнен әңгіме құра! Кемінде үш сөзді қолдан.', support: ws, long: true, maxMs: 30000, quiet: 3000 });
+    const c = s.g7x[lv];
+    const hint = { easy: 'Суретке қарап, 1–2 сөйлем айт.', medium: 'Суретке қарап, 3–4 сөйлемнен тұратын шағын әңгіме құра.', hard: `Сурет бойынша 5–6 сөйлемнен тұратын толық әңгіме құра. Әңгімеде «${L}» дыбысы кездесетін кемінде 3 сөзді қолдан.` }[lv];
+    steps.push({ kind: 'speak', mode: 'story', letter: L, words: c.words, min: lv === 'easy' ? 1 : lv === 'medium' ? 2 : 3, minTokens: lv === 'easy' ? 3 : lv === 'medium' ? 7 : 10, scene: c.scene, big: c.big, q: c.q, support: c.words, hintText: hint, long: true, maxMs: lv === 'easy' ? 15000 : 40000, quiet: lv === 'easy' ? 2200 : 3500 });
   }
   return steps;
 }
@@ -435,9 +454,13 @@ async function speakStep(stage, st, ctx) {
   const mic = h('button', { class: 'mic', 'aria-label': 'Микрофон' }, '🎤');
   const sig = { stop: false }, adult = h('div', { class: 'adult' });
   const left = h('div', {}, h('div', { class: 'prompt' }, st.hintText),
-    st.show && /^[A-ZА-ЯӘҒҚҢӨҰҮҺІ]$/.test(st.show) ? h('div', { class: 'soundcard ' + (isV(ctx.L) ? '' : 'c') }, st.show) : h('div', { class: 'pic' + (st.show && st.show.length > 4 ? ' sm' : '') }, st.show),
+    st.cards ? h('div', { class: 'pcards' }, st.cards.map(w => h('button', { class: 'pcard', title: 'Тыңдау', onclick: () => say(w) }, h('span', { class: 'pe' }, pic(w)), h('span', { class: 'pw' }, w))))
+      : st.scene ? h('div', { class: 'scenebox' + (st.big ? ' big' : '') }, st.scene.map(e => h('span', {}, e)))
+      : st.show && /^[A-ZА-ЯӘҒҚҢӨҰҮҺІ]$/.test(st.show) ? h('div', { class: 'soundcard ' + (isV(ctx.L) ? '' : 'c') }, st.show) : h('div', { class: 'pic' + (st.show && st.show.length > 4 ? ' sm' : '') }, st.show),
+    st.cards ? h('div', { class: 'support' }, 'Тірек сөздер: ' + st.cards.join(', ')) : null,
+    st.q ? h('div', { class: 'qlist' }, h('b', {}, 'Көмекші сұрақтар:'), h('ul', {}, st.q.map(x => h('li', {}, x)))) : null,
     st.text ? h('div', { class: 'prompt' }, '«' + st.text + '»') : null, st.tag ? h('div', { class: 'lvl' }, st.tag) : null,
-    st.support ? h('div', { class: 'heard' }, 'Тірек сөздер: ' + st.support.join(', ')) : null, st.extra || null);
+    st.support && !st.cards ? h('div', { class: 'support' }, 'Тірек сөздер: ' + st.support.join(', ')) : null, st.extra || null);
   const ear = st.say ? earBtn(st.say, st.text || ctx.L) : null;
   const camBox = h('div'), side = st.cam ? h('div', {}, camBox) : null;
   const micWrap = h('div', { class: 'micwrap' }, mic, meter, msg, heard, fb, adult);

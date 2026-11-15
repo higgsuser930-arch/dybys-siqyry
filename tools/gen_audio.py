@@ -4,6 +4,7 @@ import json, hashlib, os, sys, time, urllib.request, concurrent.futures as cf
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 raw = open(f'{ROOT}/data/album-data.js', encoding='utf8').read()
 D = json.loads(raw[raw.index('=') + 1:].strip().rstrip(';'))
+OV = json.loads(open(f'{ROOT}/data/overrides.js', encoding='utf8').read().split('=', 1)[1].strip().rstrip(';'))
 VOICE = '21m00Tcm4TlvDq8ikWAM'
 # Жеке дыбыстарды TTS "әріп аты" деп оқымауы үшін фонетикалық жазу
 PHON = {'а': 'аааа', 'ә': 'әәәә', 'о': 'оооо', 'ө': 'өөөө', 'ы': 'ыыыы', 'і': 'іііі', 'ұ': 'ұұұұ', 'ү': 'үүүү', 'е': 'еее', 'э': 'эээ', 'и': 'иии', 'у': 'ууу',
@@ -17,14 +18,13 @@ def walk(x):
     elif isinstance(x, list): [walk(i) for i in x]
     elif isinstance(x, dict): [walk(v) for k, v in x.items() if k not in ('letter', 'type')]
 for s in D:
+    walk(OV.get(s['letter'], {}).get('g5')); walk(OV.get(s['letter'], {}).get('g6')); [walk(v.get('words')) for v in OV.get(s['letter'], {}).get('g7', {}).values()]
     for k in ('words', 'g3', 'g4', 'g5', 'g7'): walk(s[k])
     walk(s['g6']['medium']); walk(s['g6']['hard']); walk(s['g1']['wrong']); walk(s['g1']['hard'])
     for w, p in s['syl'].items(): add(w); [add(x) for x in p]
     add(s['g6']['sentence'])
     add('intro:' + s['letter'], f"{s['letter']} дыбысын тексеруді бастаймыз!")
     add('done:' + s['letter'], f"Жарайсың! Сен {s['letter'].lower()} дыбысына арналған ойындарды аяқтадың! Енді келесі дыбысты таңдай аласың!")
-    for x in s['g1']['easy'] + s['g1']['medium'] + [s['letter'].lower()]:
-        add('snd:' + x, PHON.get(x, x * 3))
 UI = {'ok': 'Жарайсың! Дұрыс орындадың! Келесі тапсырмаға өттің!', 'bad': 'Қайтадан байқап көр. Мұқият тыңда. Сенің қолыңнан келеді!',
       'listen_repeat': 'Тыңда да, қайтала!', 'welcome': 'Сәлем! Мен Жолбарыспын. Бірге ойнайық!', 'level_easy': 'Жеңіл деңгей', 'level_medium': 'Орта деңгей', 'level_hard': 'Күрделі деңгей',
       'butterfly': 'Мұрынмен дем ал, ауызбен жай үрле. Көбелекті гүлге жеткіз!', 'candle': 'Мұрынмен дем ал, ауызбен бірқалыпты үрле. Шамды сөндір!', 'boat': 'Ұзақ әрі бірқалыпты үрле. Қайық алға жүзсін!',
@@ -45,5 +45,9 @@ def gen(item):
 print(len(T), 'clips')
 with cf.ThreadPoolExecutor(4) as ex: res = list(ex.map(gen, T.items()))
 ok = {k: fn(k) for k, g in res if g}
-open(f'{ROOT}/audio/manifest.js', 'w', encoding='utf8').write('window.AUDIO_MANIFEST = ' + json.dumps(ok, ensure_ascii=False) + ';\n')
+mp = f'{ROOT}/audio/manifest.js'
+old = json.loads(open(mp, encoding='utf8').read().split('=', 1)[1].strip().rstrip(';')) if os.path.exists(mp) else {}
+old = {k: v for k, v in old.items() if k.startswith('snd:')}  # жеке дыбыстар (gen_sounds.py) сақталады
+old.update(ok)
+open(mp, 'w', encoding='utf8').write('window.AUDIO_MANIFEST = ' + json.dumps(old, ensure_ascii=False) + ';\n')
 print('ok', len(ok), 'failed', len(res) - len(ok))
