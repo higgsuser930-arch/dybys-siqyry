@@ -253,3 +253,6 @@ h1{margin:.1em 0}h2{margin:.2em 0}p.lead{margin:.2em 0 .6em}
 .gcard .n{width:28px;height:28px;font-size:15px;top:8px;right:10px}
 .step-card{padding:10px}.step-card .e{font-size:44px}
 .grid{gap:10px}
+.btn.ghost{font-size:15px;min-height:38px;padding:6px 14px;box-shadow:0 3px 0 rgba(43,45,66,.18)}
+.bar{height:16px;margin:6px auto}
+.scene{height:120px}.scene .a,.scene .goal{font-size:56px;bottom:28px}.flame{font-size:70px}

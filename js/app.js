@@ -247,9 +247,9 @@ async function Breath(i) {
   if (B.id === 'candle') scene = h('div', { class: 'scene candle' }, h('div', { class: 'flame' }, '🔥'));
   else scene = h('div', { class: 'scene' + (B.id === 'boat' ? ' sea' : '') }, h('div', { class: 'a', style: 'left:2%' }, B.a), h('div', { class: 'goal' }, B.g));
   let blowing = false, prog = 0, finished = false, mic = false;
-  const holdBtn = h('button', { class: 'btn sky', onpointerdown: () => blowing = true, onpointerup: () => blowing = false, onpointerleave: () => blowing = false, onpointercancel: () => blowing = false }, '💨 Үрлеу (ұстап тұр)');
+  const holdBtn = h('button', { class: 'btn ghost', onpointerdown: () => blowing = true, onpointerup: () => blowing = false, onpointerleave: () => blowing = false, onpointercancel: () => blowing = false }, '💨 Үрлеу');
   app.append(h('section', { class: 'screen' }, h('div', { class: 'gbar' }, h('div', { class: 'title' }, B.t), h('span', { class: 'lvl' }, B.goal)),
-    h('div', { class: 'stage' }, mascot(B.hint), scene, bar, msg, h('div', { class: 'row' }, meter), h('div', { class: 'row noprint' }, holdBtn, h('button', { class: 'btn ghost', onclick: () => next() }, 'Өткізу ⏭'))), ));
+    h('div', { class: 'stage' }, mascot(B.hint), scene, bar, msg, h('div', { class: 'row' }, meter), h('div', { class: 'row noprint' }, holdBtn, h('button', { class: 'btn ghost', onclick: () => next() }, '⏭'))), ));
   say('ui:' + B.id);
   mic = await Mic.init();
   if (!mic) msg.textContent = 'Микрофон жоқ — «Үрлеу» батырмасын ұстап тұр 👇';
@@ -526,7 +526,7 @@ function Report() {
     h('div', { style: 'overflow:auto;border-radius:20px' }, h('table', { class: 'rep' }, h('thead', {}, h('tr', {}, h('th', {}, 'Дыбыс'), GAMES.map((g, i) => h('th', { title: g.t }, `${i + 1}. ${g.e}`)))), h('tbody', {}, rows))),
     warm.length ? h('p', { class: 'lead' }, 'Артикуляция: ' + warm.join('; ')) : null,
     h('div', { class: 'lognote' }, 'Бағдарлама жеке дыбыстарды, буынды, сөйлемді диагноз ретінде бағаламайды. Ол — тексеруді ұйымдастыруға арналған көмекші құрал. Нәтижені логопед баланың жасын, тілдік ортасын, есту жағдайын ескере отырып түсіндіреді. ★ — деңгей аяқталды, 📝 — логопед белгісі бар.'),
-    note, h('div', { class: 'row noprint' }, h('button', { class: 'btn sky', onclick: () => print() }, '🖨️ Басып шығару'), h('button', { class: 'btn ghost', onclick: () => { if (confirm('Барлық нәтижені өшіру керек пе?')) { S.res = {}; S.warm = {}; S.note = ''; save(); go(Report); } } }, '🗑️ Нәтижені тазалау'), h('button', { class: 'btn ghost', onclick: () => go(Picker) }, '🔤 Дыбыстарға'))));
+    note, h('div', { class: 'row noprint' }, h('button', { class: 'btn ghost', onclick: () => { if (confirm('Барлық нәтижені өшіру керек пе?')) { S.res = {}; S.warm = {}; S.note = ''; save(); go(Report); } } }, '🗑️ Нәтижені тазалау'), h('button', { class: 'btn ghost', onclick: () => go(Picker) }, '🔤 Дыбыстарға'))));
 }
 
 window.addEventListener('beforeunload', camOff);
