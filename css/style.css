@@ -213,3 +213,43 @@ textarea.note{width:100%;min-height:90px;font:inherit;font-weight:600;border-rad
 .home-title{font-size:clamp(34px,7vw,64px);color:#2f6f9f;text-transform:uppercase;margin:.5em 0 .1em;letter-spacing:0}
 .home-sub{font-size:clamp(18px,3vw,28px);margin:0 0 .6em;color:#3f7fae}
 .home .namebox{justify-content:center}
+
+/* ықшамдау: артық бос орындарды алып тастау */
+#app{padding-bottom:24px}
+#top{padding:6px 12px}
+.stage{min-height:0;padding:clamp(10px,2vw,20px);border-radius:28px}
+.prompt{margin:2px 0 6px;font-size:clamp(20px,3vw,28px)}
+.pic{font-size:clamp(80px,16vw,130px);line-height:1}
+.pic.sm{font-size:clamp(56px,10vw,80px)}
+.feedback{min-height:0;margin:4px 0;font-size:clamp(18px,2.6vw,24px)}
+.feedback:empty,.heard:empty,.micmsg:empty,.adult:empty{display:none}
+.heard{min-height:0}.micmsg{min-height:0}
+.choices{margin:8px 0;gap:12px}
+.choice{padding:10px 18px}.choice.pic-ch{font-size:clamp(56px,11vw,90px)}
+.ear{width:clamp(70px,13vw,100px);font-size:clamp(40px,7vw,56px);box-shadow:0 6px 0 #d1a400}
+.soundcard{width:clamp(90px,16vw,130px);font-size:clamp(54px,10vw,84px);border-radius:28px}
+.micwrap{margin:6px 0;gap:6px}
+.mic{width:clamp(80px,14vw,110px);font-size:clamp(40px,7vw,56px);box-shadow:0 7px 0 #d04a4a}
+.meter{height:32px}
+.mascot{margin:2px 0 4px}.mascot .face{font-size:clamp(44px,7vw,70px)}
+.bubble{padding:8px 14px;font-size:clamp(16px,2.4vw,22px)}
+.scene{height:150px;margin:6px auto}.flame{font-size:84px}
+.scenebox{margin:4px auto;padding:8px}.scenebox.big{font-size:clamp(80px,16vw,120px)}
+.pcard .pe{font-size:clamp(44px,8vw,64px)}
+.pcard{padding:6px 14px}
+.gbar{margin:2px 0 8px}
+.row{margin:8px 0}
+.stars{font-size:clamp(40px,8vw,64px)}
+h1{margin:.1em 0}h2{margin:.2em 0}p.lead{margin:.2em 0 .6em}
+.games{margin:10px 0}
+.bigletter{font-size:clamp(64px,12vw,110px);padding:2px 28px;border-radius:30px}
+.ring{width:100px}.ring span{width:76px;font-size:32px}
+.train{margin:8px 0}.wagon{padding:10px 18px}
+.screen.center h1{font-size:clamp(24px,4.5vw,38px)}
+.hero-art{margin-top:0}
+.games{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.gcard{padding:10px 12px;gap:2px;border-radius:22px;box-shadow:0 6px 0 rgba(43,45,66,.12);align-items:flex-start}
+.gcard .e{font-size:38px}.gcard .t{font-size:17px;line-height:1.15}.gcard .d{display:none}.gcard .s{font-size:16px;min-height:0}
+.gcard .n{width:28px;height:28px;font-size:15px;top:8px;right:10px}
+.step-card{padding:10px}.step-card .e{font-size:44px}
+.grid{gap:10px}

@@ -380,7 +380,7 @@ async function Game(L, g, li) {
   const dots = h('div', { class: 'dots' }, steps.map(() => h('i'))), stage = h('div', { class: 'stage' });
   app.append(h('section', { class: 'screen' }, h('div', { class: 'gbar' }, h('div', { class: 'title' }, `${G.e} ${G.t}`), h('span', { class: 'lvl' }, `${LVN[lv]} деңгей`), dots), stage));
   let alive = true; cleanup = () => { alive = false; stopSay(); };
-  stage.append(mascot(`${GINTRO[g]}`)); say('ui:level_' + lv); await sleep(900); if (!alive) return;
+  say('ui:level_' + lv); await sleep(500); if (!alive) return;
   for (; idx < steps.length && alive; idx++) {
     [...dots.children].forEach((d, k) => { d.className = k < idx ? 'on' : k === idx ? 'cur' : ''; });
     const f = await runStep(stage, steps[idx], { L, s, g, lv, lvl: () => alive });
