@@ -196,21 +196,41 @@ function mascot(text, mood) {
 const isV = L => D.find(x => x.letter === L).type === 'vowel';
 const RARE = new Set(['В', 'Ф', 'Э', 'Ц', 'Ч', 'Щ', 'Һ']);
 
+const HERO_SVG = `<svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+<rect width="800" height="440" fill="#fdeedd"/><rect y="360" width="800" height="80" fill="#f6dcc0"/>
+<rect x="60" y="60" width="130" height="150" rx="8" fill="#f8e3cc" stroke="#e9cdb0" stroke-width="6"/><rect x="85" y="95" width="80" height="14" rx="4" fill="#fff4e6"/><rect x="85" y="120" width="60" height="10" rx="4" fill="#fff4e6"/>
+<rect x="610" y="50" width="130" height="190" rx="8" fill="#f8e3cc" stroke="#e9cdb0" stroke-width="6"/>
+<g font-family="Nunito,Arial,sans-serif" font-weight="800" font-size="24" fill="#d9a47c" text-anchor="middle"><text x="640" y="95">A B C</text><text x="640" y="130">D E F</text><text x="640" y="165">G H I</text><text x="640" y="200">J K L</text></g>
+<g transform="translate(250 30)"><path d="M0 40a40 40 0 0 1 40-40h80a40 40 0 0 1 40 40v10a40 40 0 0 1-40 40h-30l-22 26 4-26h-32a40 40 0 0 1-40-40z" fill="#fff"/><text x="80" y="64" font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="64" fill="#4d86c4" text-anchor="middle">А</text></g>
+<g><path d="M560 440c-10-110 10-170 110-180 90 10 110 70 100 180z" fill="#fbf6ee"/><path d="M640 262l30 60 30-60z" fill="#5b87b8"/><rect x="650" y="215" width="40" height="55" rx="18" fill="#f2b992"/>
+<ellipse cx="670" cy="185" rx="46" ry="52" fill="#f6c6a0"/><path d="M620 190c-14-70 30-100 60-100s62 32 54 100c0 30 8 80 20 100h-34c-4-30-12-50-20-62-20 6-50 4-66-8-6 20-10 50-6 70h-30c20-26 20-62 22-100z" fill="#5a2d2d"/>
+<ellipse cx="668" cy="190" rx="42" ry="46" fill="#f6c6a0"/><path d="M628 168c10-24 60-34 80 0-30-10-56-10-80 0z" fill="#5a2d2d"/>
+<circle cx="652" cy="190" r="5" fill="#3b2a2a"/><circle cx="688" cy="190" r="5" fill="#3b2a2a"/><path d="M652 214q16 12 34 0" stroke="#c0634a" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M560 330c-20-40 0-80 14-96l16 10c-10 20-10 40 0 60z" fill="#fbf6ee"/><rect x="525" y="215" width="22" height="80" rx="11" fill="#f2b992" transform="rotate(-8 536 255)"/></g>
+<g><path d="M210 440c-8-90 10-130 70-140 56 8 80 50 74 140z" fill="#e8743b"/><rect x="262" y="255" width="38" height="50" rx="16" fill="#f2b992"/>
+<ellipse cx="282" cy="222" rx="52" ry="56" fill="#f6c6a0"/><path d="M232 218c-10-48 26-72 54-72 40 0 66 30 50 74-8-26-22-32-34-36-20 10-48 12-70 34z" fill="#d6622a"/><ellipse cx="232" cy="230" rx="9" ry="14" fill="#f2b992"/>
+<circle cx="264" cy="228" r="6" fill="#3b2a2a"/><circle cx="300" cy="228" r="6" fill="#3b2a2a"/><ellipse cx="282" cy="258" rx="9" ry="11" fill="#c0634a"/><path d="M258 214q8-8 16 0M296 214q8-8 16 0" stroke="#7a3e22" stroke-width="4" fill="none" stroke-linecap="round"/>
+<circle cx="286" cy="290" r="9" fill="#f2b992"/></g>
+<rect x="120" y="355" width="640" height="26" rx="8" fill="#d9a15f"/>
+<g transform="rotate(-6 250 385)"><rect x="200" y="368" width="120" height="70" rx="8" fill="#fff"/><circle cx="260" cy="402" r="16" fill="#e5483d"/><path d="M258 384q8-12 16-4" stroke="#4aa14a" stroke-width="5" fill="none"/></g>
+<g><rect x="340" y="372" width="120" height="68" rx="8" fill="#fff"/><path d="M366 410l34-26 34 26v22h-68z" fill="#f2a33a"/><rect x="392" y="412" width="16" height="20" fill="#7a4a2a"/></g>
+<g transform="rotate(5 520 395)"><rect x="480" y="370" width="120" height="68" rx="8" fill="#fff"/><path d="M500 410q30-30 60 0-30 20-60 0z" fill="#4d86c4"/></g>
+<path d="M730 440c-20-40-12-80 10-110 4 40 24 60 24 110z" fill="#7aa874"/><path d="M706 440c-30-30-40-60-20-90 14 30 34 50 34 90z" fill="#8cbb86"/><rect x="700" y="400" width="80" height="50" rx="10" fill="#5b87b8"/>
+</svg>`;
+
 /* ---------- басты бет ---------- */
 function Home() {
   crumb = '';
   const inp = h('input', { type: 'text', placeholder: 'Атың кім?', value: S.name, maxlength: 30, 'aria-label': 'Баланың аты', oninput: () => { S.name = inp.value; save(); } });
   const done = Object.keys(S.res).length;
-  app.append(h('section', { class: 'screen hero' },
-    h('div', {}, h('h1', {}, 'Дыбыс сиқыры ✨'),
-      mascot(S.name ? `Сәлем, ${S.name}! Бірге ойнайық!` : 'Сәлем! Мен Жолбарыспын. Бірге ойнайық, дыбыстарды үйренейік!'),
-      h('p', { class: 'lead' }, '37 дыбыс • 259 ойын • микрофонмен сөйле, камерамен айнаға қара!'),
-      h('div', { class: 'namebox' }, inp),
-      h('div', { class: 'row', style: 'justify-content:flex-start' },
-        h('button', { class: 'btn big', onclick: () => { say('ui:welcome'); go(Breath, 0); } }, '▶ Бастаймыз!'),
-        h('button', { class: 'btn ghost sky', onclick: () => go(Picker) }, '🔤 Дыбыс таңдау'),
-        done ? h('button', { class: 'btn ghost', onclick: () => go(Report) }, '📋 Қорытынды') : null)),
-    h('div', { class: 'big-emoji', 'aria-hidden': 'true' }, '🐯')));
+  app.append(h('section', { class: 'screen home' },
+    h('div', { class: 'hero-art', role: 'img', 'aria-label': 'Логопед бала мен дыбыс жаттықтырып отыр', html: HERO_SVG }),
+    h('h1', { class: 'home-title' }, 'Дыбыс әлеміне саяхат'),
+    h('p', { class: 'home-sub' }, 'Дыбыстарды тексеруге арналған интерактивті логопедиялық альбом'),
+    h('div', { class: 'namebox' }, inp),
+    h('div', { class: 'row' },
+      h('button', { class: 'btn big', onclick: () => { say('ui:welcome'); go(Breath, 0); } }, '▶ Бастаймыз!'),
+      done ? h('button', { class: 'btn ghost', onclick: () => go(Report) }, '📋 Қорытынды') : null)));
   setTimeout(() => say('ui:welcome'), 300);
 }
 
@@ -330,7 +350,7 @@ function buildSteps(s, g, lv) {
   const L = s.letter, l = L.toLowerCase(), steps = [];
   if (g === 1) {
     if (lv === 'hard') for (const w of s.g1.hard) steps.push({ kind: 'findword', word: w, opts: shuffle([w, ...shuffle(s.g1.wrong).slice(0, 2)]) });
-    else for (const x of s.g1[lv]) steps.push({ kind: 'sound', snd: x });
+    else for (const x of s.g1[lv]) steps.push({ kind: 'sound', snd: x, pool: s.g1.easy.concat(s.g1.medium) });
   }
   if (g === 2) { const n = lv === 'easy' ? 1 : 3; for (let i = 0; i < n; i++) steps.push({ kind: 'speak', mode: 'voice', n, i, say: 'snd:' + l, show: L, hintText: lv === 'hard' ? ['Жай айт', 'Қалыпты айт', 'Сәл қатты айт'][i] : lv === 'medium' ? `${i + 1}-ші рет` : 'Тыңда да, қайтала!', cam: true }); }
   if (g === 3) for (const w of s.g3[lv]) { steps.push({ kind: 'train', word: w, syl: s.syl[w], pick: lv === 'medium', both: lv === 'hard' }); }
@@ -407,7 +427,8 @@ async function runStep(stage, st, ctx) {
     const opts = [h('button', { class: 'choice' }, `Бұл «${L}»`), h('button', { class: 'choice' }, 'Басқа дыбыс')];
     stage.replaceChildren(h('div', { class: 'prompt' }, `Тыңда: «${L}» дыбысы естілді ме?`), ear, h('div', { class: 'soundcard ' + (isV(L) ? '' : 'c'), style: 'display:none' }), h('div', { class: 'choices' }, opts), fb);
     setTimeout(() => ear.click(), 250);
-    return new Promise(res => opts.forEach((b, k) => b.onclick = async () => { const ok = (k === 0) === (st.snd === l); b.classList.add(ok ? 'good' : 'bad'); feedback(fb, ok); if (ok) { opts.forEach(o => o.disabled = true); await sleep(900); res(fails); } else fails++; }));
+    const others = (st.pool || []).filter(x => x !== l), pickOther = () => others[Math.random() * others.length | 0] || 'ә';
+    return new Promise(res => opts.forEach((b, k) => b.onclick = async () => { const ok = (k === 0) === (st.snd === l); b.classList.add(ok ? 'good' : 'bad'); feedback(fb, ok); say('snd:' + (k === 0 ? l : (st.snd !== l ? st.snd : pickOther())), k === 0 ? L : ''); if (ok) { opts.forEach(o => o.disabled = true); await sleep(1500); res(fails); } else fails++; }));
   }
   if (st.kind === 'findword') {
     const opts = st.opts.map(w => h('button', { class: 'choice pic-ch', 'aria-label': 'Сурет', onclick: async e => { say(w); const ok = has(w, L); const b = e.currentTarget; if (done) return; b.classList.add(ok ? 'good' : 'bad'); feedback(fb, ok); if (ok) { done = true; await sleep(1100); resolve(fails); } else fails++; } }, pic(w)));
